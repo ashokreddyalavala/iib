@@ -1,0 +1,268 @@
+
+DECLARE req NAMESPACE 'http://www.temenos.com/T24/ofs/Request';
+CREATE COMPUTE MODULE createAccount_Construct_Req
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		DECLARE IM REFERENCE TO InputRoot;
+		DECLARE OM REFERENCE TO OutputRoot;
+		DECLARE REQ REFERENCE TO InputRoot.JSON.Data.CustomerDetails.Item;
+		SET Environment.Variables.Logging.LogType='LogDebug';
+		SET Environment.Variables.Logging.ReferenceId=InputRoot.JSON.Data.ReferenceId;
+		SET Environment.Variables.Logging.Channel=InputRoot.JSON.Data.Channel;
+		SET Environment.Variables.Logging.Operation=InputLocalEnvironment.REST.Input.Operation;
+		SET Environment.Variables.Logging.BackendSystem='T24';
+	
+		SET Environment.Variables.RequestType='Director';
+		SET Environment.Variables.CustomerCount	=	1;
+		
+		-------Director Record----------------
+		IF InputRoot.JSON.Data.EntityType='Individual' THEN
+			SET Environment.Variables.RequestType='NonCorporate';
+			CALL CreateDirectorAccountRequest(REQ,OM);
+			PROPAGATE TO TERMINAL 'out1';
+			IF Environment.Variables.JointCustomer.Status = 'FAILED' THEN
+				RETURN FALSE;
+			END IF;	
+		ELSE 
+			SET Environment.Varaibles.Corporate=TRUE;
+			For personalCust AS InputRoot.JSON.Data.CustomerDetails.Item[] DO		
+				/*CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC';
+				DECLARE inRef REFERENCE TO personalCust;
+				DECLARE outRef REFERENCE TO OutputRoot.XMLNSC;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.CompanyCode = 'KE0010001';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.GtsControl  = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.MessageId   = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.NoOfAuth    = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.Operation   = 'PROCESS';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.Replace     = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.RequestCommon.UserName    = 'AGENCY01';			
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.DateofBirth						= COALESCE(personalCust.DateOfBirth);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Gender								= COALESCE(personalCust.Gender);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gLEGALID.mLEGALID.LegalDocName		= COALESCE(personalCust.IdType,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gLEGALID.mLEGALID.LegalIDNo 		= COALESCE(personalCust.IdNumber);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gLEGALID.mLEGALID.IssuingAuthority	= COALESCE(personalCust.IssueAuthority);		
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gNAME1.FullName 					= COALESCE(personalCust.Name);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Nationality 						= COALESCE(personalCust.Nationality);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Residence 							= COALESCE(personalCust.Residence);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Industry 							= COALESCE(personalCust.Industry);
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gLEGALID.mLEGALID.IssueDate 		= REPLACE(personalCust.IdIssueDate, '-',''); --REPLACE(COALESCE(personalCust.IdIssueDate),'-',''); --\issue \date
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gLEGALID.mLEGALID.ExpiryDate 		=  REPLACE(COALESCE(personalCust.IdExpiryDate),'-',''); --ExpiryIDExpiry
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gTAXID.TaxPin 						= personalCust.TaxPin;		  
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gSHORTNAME.ShortName 				= COALESCE(personalCust.Name);
+		 		SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.gSTREET.StreetName 				= personalCust.StreetName;
+		 		DECLARE inputType CHARACTER personalCust.IdType;		
+				CASE inputType			
+					WHEN 'NATIONAL.ID' THEN									
+						SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Mnemonic	= 'N'||COALESCE(personalCust.IdNumber); --id number
+					WHEN 'ALIEN.ID' THEN					
+						SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Mnemonic   = 'A'||COALESCE(personalCust.IdNumber); --id number
+					WHEN 'PASSPORT.ID' THEN				
+						SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBDIRECTORRequest.CUSTOMERSCCSBDIRECTOR.Mnemonic   = 'P'||COALESCE(personalCust.IdNumber); --id number									
+				END CASE;
+					*/
+					
+				CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC';
+				DECLARE inRef REFERENCE TO personalCust;
+				DECLARE outRef REFERENCE TO OutputRoot.XMLNSC;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.CompanyCode = 'KE0010001';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.GtsControl  = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.MessageId   = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.NoOfAuth    = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.Operation   = 'PROCESS';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.Replace     = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.UserName    = 'AGENCY01';			
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.DateofBirth						= COALESCE(personalCust.DateOfBirth);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Gender							= COALESCE(personalCust.Gender);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.LegalDocName	= COALESCE(personalCust.IdType,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.LegalIDNo 		= COALESCE(personalCust.IdNumber);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.IssuingAuthority	= COALESCE(personalCust.IssueAuthority);		
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gNAME1.FullName 					= COALESCE(personalCust.Name);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Nationality 						= COALESCE(personalCust.Nationality);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Residence 						= COALESCE(personalCust.Residence);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Industry 						= COALESCE(personalCust.Industry);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.IssueDate 		= REPLACE(personalCust.IdIssueDate, '-',''); --REPLACE(COALESCE(personalCust.IdIssueDate),'-',''); --\issue \date
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.ExpiryDate 		=  REPLACE(COALESCE(personalCust.IdExpiryDate),'-',''); --ExpiryIDExpiry
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gTAXID.TaxPin 						= personalCust.TaxPin;		  
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gSHORTNAME.ShortName 				= COALESCE(personalCust.Name);
+		 		SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gSTREET.PostalAddress 				= COALESCE(personalCust.StreetName,' ');
+		 		SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLLADDRESS.mLLADDRESS.sgLLADDRESS.PhysicalAddress=COALESCE(personalCust.StreetName,' ');
+		 		DECLARE inputType CHARACTER personalCust.IdType;		
+				CASE inputType			
+					WHEN 'NATIONAL.ID' THEN									
+						SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.CustomerMnemonic	= 'N'||COALESCE(personalCust.IdNumber); --id number
+					WHEN 'ALIEN.ID' THEN					
+						SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.CustomerMnemonic   = 'A'||COALESCE(personalCust.IdNumber); --id number
+					WHEN 'PASSPORT.ID' THEN				
+						SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.CustomerMnemonic   = 'P'||COALESCE(personalCust.IdNumber); --id number									
+				END CASE;	
+				--CALL CreateDirectorAccountRequest(REQ,OM);
+				propagate to terminal 'out1';
+				
+				IF Environment.Variables.JointCustomer.Status = 'FAILED' THEN
+						Return FALSE;
+				END IF;
+			END FOR;
+		END IF;
+			IF Environment.Varaibles.Corporate=TRUE THEN
+				----------------------------Customer Record--------------
+				SET Environment.Variables.RequestType='Company';	
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.CompanyCode='KE0010001';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.GtsControl='';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.MessageId='';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.NoOfAuth='';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.Operation='PROCESS';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.Replace='';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.RequestCommon.UserName='AGENCY01';
+			
+			
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gNAME1.FullName						= InputRoot.JSON.Data.CompanyName; --'PullaReddy'; --INPUT		
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gSHORTNAME.ShortName 				= InputRoot.JSON.Data.CompanyName; --'Reddy';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.Industry								= InputRoot.JSON.Data.Industry; --'800';
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.CustomerMnemonic 					= 'C'||InputRoot.JSON.Data.RegistrationNo; --'J556792';		
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gLEGALID.mLEGALID.LegalDocName		= InputRoot.JSON.Data.IdType;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gLEGALID.mLEGALID.RegistrationNo		= InputRoot.JSON.Data.RegistrationNo;	
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gTAXID.TaxPin						= InputRoot.JSON.Data.TaxPin;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gLEGALID.mLEGALID.IssueDate			= REPLACE(InputRoot.JSON.Data.IdIssueDate,'-','');
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gLEGALID.mLEGALID.IssuingAuthority	= InputRoot.JSON.Data.IssueAuthority;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.OperatingCountry						= InputRoot.JSON.Data.OperatingCountry;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gSTREET.PostalAddress				= InputRoot.JSON.Data.PostalCode;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.AMLFlag								= InputRoot.JSON.Data.AMLFlag;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.EntityId								= InputRoot.JSON.Data.EntityId;
+				DECLARE i INTEGER 1;
+				FOR directorid AS Environment.Variables.Director.id[] DO
+					SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gRELATIONCODE.mRELATIONCODE[i].RelationCode = '4';
+					SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gRELATIONCODE.mRELATIONCODE[i].RelationCustomer = directorid; --'1354919'; -- ARRY OF CUST NO'S
+					SET i = i+1;
+				END FOR;
+				SET OutputRoot.XMLNSC.req:CUSTOMERSCCSBNONPERSONALRequest.CUSTOMERSCCSBNONPERSONAL.gLLADDRESS.mLLADDRESS.sgLLADDRESS.PhysicalAddress	= InputRoot.JSON.Data.PhysicalAddress;
+				PROPAGATE TO TERMINAL 'out2';
+			
+				IF Environment.Variables.JointCustomer.Status = 'FAILED' THEN
+					RETURN FALSE;
+				END IF;
+			--ELSE 
+				--SET Environment.Variables.RequestType='NonCorporate';
+				/*CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.CompanyCode ='KE0010001';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.GtsControl  = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.MessageId   = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.NoOfAuth    = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.Operation   = 'PROCESS';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.Replace	 = '';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.UserName	 = 'AGENCY01';
+				
+				
+				--SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.RequestCommon.CompanyCode = COALESCE(InputRoot.JSON.Data.CompanyCode,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.DateofBirth                   					= InputRoot.JSON.Data.DateOfBirth;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gCOUNTRY.Country				 					= COALESCE(InputRoot.JSON.Data.Country);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Gender 											= COALESCE(InputRoot.JSON.Data.Gender);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.LegalDocName					= COALESCE(InputRoot.JSON.Data.IdType,'');  --id type; -
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.LegalIDNo 	 					= COALESCE(InputRoot.JSON.Data.IdNumber); --id number
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.IssuingAuthority 				= COALESCE(InputRoot.JSON.Data.IssueAuthority); --issuing authority.		
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gPOSTCODE.PostCode 								= COALESCE(InputRoot.JSON.Data.PostalCode); -- postal code		
+				DECLARE physicalAddress CHARACTER COALESCE(InputRoot.JSON.Data.PSAddress,''); 		
+				DECLARE i,j INTEGER 1;
+				 IF LENGTH(physicalAddress)>35 THEN
+				 	WHILE j>0 DO
+				 		IF LENGTH(SUBSTRING(physicalAddress FROM j FOR 35)) > 0 THEN
+				 			SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLLADDRESS.mLLADDRESS[i].sgLLADDRESS.PhysicalAddress = SUBSTRING(physicalAddress FROM j FOR 35);		 		
+				 			SET j = j+35;
+				 		ELSE 
+				 			SET j = 0;
+				 		END IF;
+				 		SET i = i+1;
+				 	END WHILE;		 	
+				 ELSE
+				 	SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLLADDRESS.mLLADDRESS.sgLLADDRESS.PhysicalAddress = physicalAddress; --physical address
+				 END IF;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gNAME1.FullName 									= SUBSTRING(COALESCE(InputRoot.JSON.Data.Name) FROM 1 FOR 35);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.IBEmail											= COALESCE(InputRoot.JSON.Data.Email);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gPHONE1.mPHONE1.EmailAddress 					= COALESCE(InputRoot.JSON.Data.Email);		
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.IBMobile											= COALESCE(InputRoot.JSON.Data.MobileNo);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gPHONE1.mPHONE1.MobilePhoneNumbers				= COALESCE(InputRoot.JSON.Data.MobileNo);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gPHONE1.mPHONE1.SMSAlertNo                       = COALESCE(InputRoot.JSON.Data.MobileNo);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Nationality 										= COALESCE(InputRoot.JSON.Data.Nationality);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Residence 										= COALESCE(InputRoot.JSON.Data.Residence);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Industry 										= COALESCE(InputRoot.JSON.Data.Industry);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.IssueDate 						= REPLACE(COALESCE(InputRoot.JSON.Data.IdIssueDate),'-','');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.ExpiryDate 					= REPLACE(COALESCE(InputRoot.JSON.Data.IdExpiryDate),'-','');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gTAXID.TaxPin 									= COALESCE(InputRoot.JSON.Data.TaxPin,'');		  
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gSHORTNAME.ShortName 							= SUBSTRING(COALESCE(InputRoot.JSON.Data.Name) FROM 1 FOR 35);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gLEGALID.mLEGALID.LegalName                      = COALESCE(InputRoot.JSON.Data.Name);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.CustomerMnemonic     						    = SUBSTRING(InputRoot.JSON.Data.IdType FROM 1 FOR 1)||COALESCE(InputRoot.JSON.Data.IdNumber);
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.Introducer	=	COALESCE(InputRoot.JSON.Data.SalesConsultant,'');
+
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gSTREET.PostalAddress 							     = COALESCE(InputRoot.JSON.Data.PostalAddress); -- postal address
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.AMLFlag 											     = COALESCE(InputRoot.JSON.Data.AMLFlag); 	
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gEMPLOYMENTSTATUS.mEMPLOYMENTSTATUS.CustomerCurrency  = COALESCE(InputRoot.JSON.Data.CustomerCurrency,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gEMPLOYMENTSTATUS.mEMPLOYMENTSTATUS.Occupation        = COALESCE(InputRoot.JSON.Data.Occupation,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gEMPLOYMENTSTATUS.mEMPLOYMENTSTATUS.Salary            = COALESCE(InputRoot.JSON.Data.Salary,'');
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.gTOWNCOUNTRY.TownCity                                 = COALESCE(InputRoot.JSON.Data.TownCity,''); 
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gONB.IMAGE.TYPE"."mONB.IMAGE.TYPE"[1].ImageType      = 'PHOTOS';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gONB.IMAGE.TYPE"."mONB.IMAGE.TYPE"[1].ImageName      = InputRoot.JSON.Data.ImagePhoto;		
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gONB.IMAGE.TYPE"."mONB.IMAGE.TYPE"[2].ImageType      = 'SIGNATURES';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gONB.IMAGE.TYPE"."mONB.IMAGE.TYPE"[2].ImageName      = InputRoot.JSON.Data.ImageSignature;
+		
+				IF InputRoot.JSON.Data.FatcaFlag = 'Y'  THEN
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.FatcaFlag									      = COALESCE(InputRoot.JSON.Data.FatcaFlag,'');
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.FNRStatus 										  = 'R';
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.FNRClassification 								  = 'R';
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.MailingAddress                                     = SUBSTRING(COALESCE(InputRoot.JSON.Data.PSAddress,'') FROM 1 FOR 35); 
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gCITZ.ALL"."mCITZ.ALL"[1].CountriesofCitznship    = COALESCE(InputRoot.JSON.Data.Nationaity);
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gTAX.RES.ALL"[1].CountriesofTaxResidence[1]       = COALESCE(InputRoot.JSON.Data.Residence);
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gPRY.ADDR".PrimaryAddress                         = SUBSTRING(COALESCE(InputRoot.JSON.Data.PSAddress,'') FROM 1 FOR 35);
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.CountryofBirth = '';
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gCITZ.ALL"."mCITZ.ALL"[1].TinId                   = COALESCE(InputRoot.JSON.Data.TinId,'');
+				ELSEIF InputRoot.JSON.Data.FatcaFlag = 'N'  THEN
+					SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.FatcaFlag										  = COALESCE(InputRoot.JSON.Data.FatcaFlag,'');
+				END IF;
+				--SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.OnbChannel	=	'DIGITAL';
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL.PEPStatus	=	InputRoot.JSON.Data.pep;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINEMAIL	=	InputRoot.JSON.Data.NextKinEmail;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINIDNUM	=	InputRoot.JSON.Data.NextKinIdNumber;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINIDTYP	=	InputRoot.JSON.Data.NextKinIdType;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINNAME		=	InputRoot.JSON.Data.NextKinName;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINPHONE	=	InputRoot.JSON.Data.NextKinPhone;
+				SET OutputRoot.XMLNSC.req:CUSTOMERONBOARDINGPERSONALRequest.CUSTOMERONBOARDINGPERSONAL."gNEXT.KIN.TYPE"."mNEXT.KIN.TYPE".NEXTKINTYPE		=	InputRoot.JSON.Data.NextKinType;
+				
+				*/
+				
+--				CALL CreateDirectorAccountRequest(REQ,OM);
+--				PROPAGATE TO TERMINAL 'out1';
+--				IF Environment.Variables.JointCustomer.Status = 'FAILED' THEN
+--					RETURN FALSE;
+--				END IF;				
+			END IF;
+			
+			
+		-------------Create Account-----------------
+			SET Environment.Variables.RequestType='Account';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.CompanyCode	= 'KE0010001';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.GtsControl	= '';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.MessageId		= '';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.NoOfAuth		= '';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.Operation		= 'PROCESS';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.Replace		= '';
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.RequestCommon.UserName		= 'AGENCY01';		
+			
+			SET OutputRoot.XMLNSC.req:ACCOUNTSCCORPCALCYRequest.ACCOUNTSCCORPCALCY.CustomerID = COALESCE(Environment.Variables.Comapny.id,Environment.Variables.Individual.id);
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

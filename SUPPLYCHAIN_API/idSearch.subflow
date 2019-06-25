@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmTryCatch.msgnode="ComIbmTryCatch.msgnode" xmlns:T24Outbound.msgnode="T24Outbound.msgnode" xmlns:common_ProcessFailure.subflow="common/ProcessFailure.subflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:mbmonitor="http://www.ibm.com/wbi/2008/eflow_mbmonitor" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility"
+    nsURI="idSearch.subflow" nsPrefix="idSearch.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="idSearch" bundleName="idSearch" pluginId="SUPPLYCHAIN_API"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/SUPPLYCHAIN_API/icons/full/obj16/idSearch.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/SUPPLYCHAIN_API/icons/full/obj30/idSearch.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input_1" location="25,25">
+        <translation xmi:type="utility:TranslatableString" key="Input" bundleName="idSearch" pluginId="SUPPLYCHAIN_API"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output_1" location="698,37">
+        <translation xmi:type="utility:TranslatableString" key="Output" bundleName="idSearch" pluginId="SUPPLYCHAIN_API"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="155,25" computeExpression="esql://routine/#idSearch_CustomerID.Main">
+        <translation xmi:type="utility:ConstantString" string="CustIDSearchReq"/>
+        <monitorEvents eventSourceDescription="In terminal" eventSourceName="CustIDSearchReq.terminal.in" eventIdentity="CustIDSearchReq.InTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$LocalEnvironment/REST/Input/Operation" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Root/JSON/Data/Channel" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Root/JSON/Data/ReferenceId" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData/>
+            <eventName literal="CustIDSearchReq.InTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+        <monitorEvents eventSourceDescription="Out terminal" eventSourceName="CustIDSearchReq.terminal.out" eventIdentity="CustIDSearchReq.OutTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/BackendSystem" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData bitstreamContent="body"/>
+            <eventName literal="CustIDSearchReq.OutTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="437,32" computeExpression="esql://routine/#idSearch_CusAccSearch.Main">
+        <translation xmi:type="utility:ConstantString" string="CustAccSearchReq"/>
+        <monitorEvents eventSourceDescription="In terminal" eventSourceName="CustAccSearchReq.terminal.in" eventIdentity="CustAccSearchReq.InTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/BackendSystem" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData bitstreamContent="body"/>
+            <eventName literal="CustAccSearchReq.InTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+        <monitorEvents eventSourceDescription="Out1 terminal" eventSourceName="CustAccSearchReq.terminal.out1" eventIdentity="CustAccSearchReq.Out1Terminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData bitstreamContent="body"/>
+            <eventName literal="CustAccSearchReq.Out1Terminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+        <monitorEvents eventSourceDescription="Out terminal" eventSourceName="CustAccSearchReq.terminal.out" eventIdentity="CustAccSearchReq.OutTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/BackendSystem" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData bitstreamContent="body"/>
+            <eventName literal="CustAccSearchReq.OutTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="617,185" computeExpression="esql://routine/#idSearch_AccountResponse.Main">
+        <translation xmi:type="utility:ConstantString" string="CustomerAccResponse"/>
+        <monitorEvents eventSourceDescription="In terminal" eventSourceName="CustomerAccResponse.terminal.in" eventIdentity="CustomerAccResponse.InTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/BackendSystem" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData encoding="base64Binary"/>
+            <eventName literal="CustomerAccResponse.InTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+        <monitorEvents eventSourceDescription="Out terminal" eventSourceName="CustomerAccResponse.terminal.out" eventIdentity="CustomerAccResponse.OutTerminal">
+          <eventXMLDoc xmi:type="mbmonitor:MonitorEvent">
+            <applicationData dataLocation="$Environment/Variables/Logging/LogType" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/ReferenceId" isXPath="true" complexData="true"/>
+            <applicationData dataLocation="$Environment/Variables/Logging/Channel" isXPath="true" complexData="true"/>
+            <globalTransactionCorrelator/>
+            <parentTransactionCorrelator/>
+            <localTransactionCorrelator/>
+            <bitStreamData bitstreamContent="body"/>
+            <eventName literal="CustomerAccResponse.OutTerminal"/>
+            <eventFilter dataLocation="true()" isXPath="true"/>
+          </eventXMLDoc>
+        </monitorEvents>
+      </nodes>
+      <nodes xmi:type="ComIbmTryCatch.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="95,25">
+        <translation xmi:type="utility:ConstantString" string="Try Catch"/>
+      </nodes>
+      <nodes xmi:type="common_ProcessFailure.subflow:FCMComposite_1" xmi:id="FCMComposite_1_7" location="246,185">
+        <translation xmi:type="utility:ConstantString" string="ProcessFailure"/>
+      </nodes>
+      <nodes xmi:type="T24Outbound.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="326,101" messageSet="SupplyChainAdapter" adapterName="SupplyChainAdapter" messageType="&lt;serviceDescription>&lt;serviceName>Onboarding Customer ID Search&lt;/serviceName>&lt;target>E.ONB.CUS.ID.SEARCH&lt;/target>&lt;action>enquiry&lt;/action>&lt;requestName>EONBCUSIDSEARCHRequest&lt;/requestName>&lt;responseName>EONBCUSIDSEARCHResponse&lt;/responseName>&lt;schemas>&lt;request>&lt;/request>&lt;response>&lt;content>&lt;![CDATA[&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; targetNamespace=&quot;http://www.temenos.com/T24/ofs/EONBCUSIDSEARCHType&quot; xmlns:xdb=&quot;http://xmlns.oracle.com/xdb&quot; xdb:storeVarrayAsTable=&quot;true&quot; xmlns:hfp=&quot;http://www.w3.org/2001/XMLSchema-hasFacetAndProperty&quot; xmlns:ns0=&quot;http://www.temenos.com/T24/ofs/EONBCUSIDSEARCHType&quot;>&lt;!-- This T24 XML Schema automatically produced -->&lt;!-- Copyright Temenos Holdings NV 2019-->&lt;!-- T24 Application: E.ONB.CUS.ID.SEARCH -->&lt;!-- T24 Release: R17 -->&lt;!-- Production timestamp: 09:21:32 30 APR 2019 -->&lt;xsd:element name=&quot;EONBCUSIDSEARCH&quot; type=&quot;ns0:EONBCUSIDSEARCHType&quot;>&lt;xsd:annotation>&lt;xsd:documentation>This is the top level element for the record data&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;locked&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;useschema&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;register&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;aaPropertyName&quot; value=&quot;&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;/xsd:element>&lt;xsd:complexType name=&quot;EONBCUSIDSEARCHType&quot; xdb:maintainDOM=&quot;false&quot;>  &lt;xsd:annotation>  &lt;xsd:documentation>This complex type represents the T24 data for the E.ONB.CUS.ID.SEARCH table&lt;/xsd:documentation>  &lt;/xsd:annotation> &lt;xsd:sequence>&lt;xsd:element minOccurs=&quot;0&quot; name=&quot;gEONBCUSIDSEARCHDetailType&quot;>&lt;xsd:complexType xdb:SQLType=&quot;gEONBCUSIDSEARCHSelfldidNumber&quot; xdb:maintainDOM=&quot;false&quot;>&lt;xsd:sequence minOccurs=&quot;0&quot;>&lt;xsd:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;mEONBCUSIDSEARCHDetailType&quot;>&lt;xsd:complexType xdb:SQLType=&quot;mEONBCUSIDSEARCHSelfldidNumber&quot; xdb:maintainDOM=&quot;false&quot;>&lt;xsd:sequence minOccurs=&quot;0&quot;>&lt;xsd:element id=&quot;selFldID.NUMBER&quot; minOccurs=&quot;0&quot; name=&quot;IDNumber&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>selFldID.NUMBER&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;selFldID.NUMBER&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;selFldID.TYPE&quot; minOccurs=&quot;0&quot; name=&quot;IDType&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>selFldID.TYPE&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;selFldID.TYPE&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;selFldISSUE.AUTH&quot; minOccurs=&quot;0&quot; name=&quot;IssueAuth&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>selFldISSUE.AUTH&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;selFldISSUE.AUTH&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;CUS.ID&quot; minOccurs=&quot;0&quot; name=&quot;Customer&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>CUS.ID&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;CUS.ID&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;CUS.ACTIVE&quot; minOccurs=&quot;0&quot; name=&quot;CUSACTIVE&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>CUS.ACTIVE&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;CUS.ACTIVE&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;F.CUS.NAME&quot; minOccurs=&quot;0&quot; name=&quot;Name&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>F.CUS.NAME&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;F.CUS.NAME&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;25&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;BRANCH&quot; minOccurs=&quot;0&quot; name=&quot;CustomerBranh&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>BRANCH&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;BRANCH&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;25&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;ID.ISSUER&quot; minOccurs=&quot;0&quot; name=&quot;IDISSUER&quot; nillable=&quot;true&quot; xdb:SQLCollType=&quot;T24EONBCUSIDSEARCH3_COLL_COLL&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>ID.ISSUER&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;ID.ISSUER&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;3&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;ID.TYPE&quot; minOccurs=&quot;0&quot; name=&quot;IDTYPE&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>ID.TYPE&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;ID.TYPE&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;LEGAL.ID.NUMBER&quot; minOccurs=&quot;0&quot; name=&quot;LEGALIDNUMBER&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>LEGAL.ID.NUMBER&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;LEGAL.ID.NUMBER&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;35&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;/xsd:sequence>&lt;xsd:attribute name=&quot;m&quot; type=&quot;xsd:positiveInteger&quot; use=&quot;optional&quot;/>&lt;/xsd:complexType>&lt;/xsd:element>&lt;/xsd:sequence>&lt;xsd:attribute name=&quot;g&quot; type=&quot;xsd:positiveInteger&quot; use=&quot;optional&quot;/>&lt;/xsd:complexType>&lt;/xsd:element> &lt;/xsd:sequence> &lt;/xsd:complexType>&lt;/xsd:schema>]]>&lt;/content>&lt;/response>&lt;/schemas>&lt;/serviceDescription>"
+          hosts="10.235.76.48" environmentProperties="OFS_SOURCE=IIBOFS">
+        <translation xmi:type="utility:ConstantString" string="T24CustomerIdSearch"/>
+      </nodes>
+      <nodes xmi:type="T24Outbound.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_9" location="505,190" messageSet="SupplyChainAdapter" adapterName="SupplyChainAdapter" messageType="&lt;serviceDescription>&lt;serviceName>Onboarding Cust Account Search&lt;/serviceName>&lt;target>E.ONB.CUST.ACCOUNTS&lt;/target>&lt;action>enquiry&lt;/action>&lt;requestName>EONBCUSTACCOUNTSRequest&lt;/requestName>&lt;responseName>EONBCUSTACCOUNTSResponse&lt;/responseName>&lt;schemas>&lt;request>&lt;/request>&lt;response>&lt;content>&lt;![CDATA[&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; targetNamespace=&quot;http://www.temenos.com/T24/ofs/EONBCUSTACCOUNTSType&quot; xmlns:xdb=&quot;http://xmlns.oracle.com/xdb&quot; xdb:storeVarrayAsTable=&quot;true&quot; xmlns:hfp=&quot;http://www.w3.org/2001/XMLSchema-hasFacetAndProperty&quot; xmlns:ns0=&quot;http://www.temenos.com/T24/ofs/EONBCUSTACCOUNTSType&quot;>&lt;!-- This T24 XML Schema automatically produced -->&lt;!-- Copyright Temenos Holdings NV 2019-->&lt;!-- T24 Application: E.ONB.CUST.ACCOUNTS -->&lt;!-- T24 Release: R17 -->&lt;!-- Production timestamp: 09:21:34 30 APR 2019 -->&lt;xsd:element name=&quot;EONBCUSTACCOUNTS&quot; type=&quot;ns0:EONBCUSTACCOUNTSType&quot;>&lt;xsd:annotation>&lt;xsd:documentation>This is the top level element for the record data&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;locked&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;useschema&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;register&quot; value=&quot;no&quot;/>&lt;hfp:hasProperty name=&quot;aaPropertyName&quot; value=&quot;&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;/xsd:element>&lt;xsd:complexType name=&quot;EONBCUSTACCOUNTSType&quot; xdb:maintainDOM=&quot;false&quot;>  &lt;xsd:annotation>  &lt;xsd:documentation>This complex type represents the T24 data for the E.ONB.CUST.ACCOUNTS table&lt;/xsd:documentation>  &lt;/xsd:annotation> &lt;xsd:sequence>&lt;xsd:element minOccurs=&quot;0&quot; name=&quot;gEONBCUSTACCOUNTSDetailType&quot;>&lt;xsd:complexType xdb:maintainDOM=&quot;false&quot;>&lt;xsd:sequence minOccurs=&quot;0&quot;>&lt;xsd:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;mEONBCUSTACCOUNTSDetailType&quot;>&lt;xsd:complexType xdb:maintainDOM=&quot;false&quot;>&lt;xsd:sequence minOccurs=&quot;0&quot;>&lt;xsd:element id=&quot;selFldCUSTOMER&quot; minOccurs=&quot;0&quot; name=&quot;CustomerNo&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>selFldCUSTOMER&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;selFldCUSTOMER&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;CUS.ACTIVE&quot; minOccurs=&quot;0&quot; name=&quot;CUSACTIVE&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>CUS.ACTIVE&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;CUS.ACTIVE&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Customer&quot; minOccurs=&quot;0&quot; name=&quot;Customer&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Customer&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Customer&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;No.of.accounts&quot; minOccurs=&quot;0&quot; name=&quot;Noofaccounts&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>No.of.accounts&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;No.of.accounts&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Customer.dormant&quot; minOccurs=&quot;0&quot; name=&quot;Customerdormant&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Customer.dormant&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Customer.dormant&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;4&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Account.number&quot; minOccurs=&quot;0&quot; name=&quot;Accountnumber&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Account.number&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Account.number&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;15&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Product.type&quot; minOccurs=&quot;0&quot; name=&quot;Producttype&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Product.type&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Product.type&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;20&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Opening.date&quot; minOccurs=&quot;0&quot; name=&quot;Openingdate&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Opening.date&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Opening.date&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;14&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;xsd:element id=&quot;Current.balance&quot; minOccurs=&quot;0&quot; name=&quot;Currentbalance&quot; nillable=&quot;true&quot; xdb:SQLName=&quot;&quot;>&lt;xsd:annotation>&lt;xsd:documentation>Current.balance&lt;/xsd:documentation>&lt;xsd:appinfo>&lt;hfp:hasProperty name=&quot;fielddatatype&quot; value=&quot;string&quot;/>&lt;hfp:hasProperty name=&quot;fieldname&quot; value=&quot;Current.balance&quot;/>&lt;/xsd:appinfo>&lt;/xsd:annotation>&lt;xsd:simpleType>&lt;xsd:restriction base=&quot;xsd:string&quot;>&lt;xsd:maxLength value=&quot;10&quot;/>&lt;/xsd:restriction>&lt;/xsd:simpleType>&lt;/xsd:element>&lt;/xsd:sequence>&lt;xsd:attribute name=&quot;m&quot; type=&quot;xsd:positiveInteger&quot; use=&quot;optional&quot;/>&lt;/xsd:complexType>&lt;/xsd:element>&lt;/xsd:sequence>&lt;xsd:attribute name=&quot;g&quot; type=&quot;xsd:positiveInteger&quot; use=&quot;optional&quot;/>&lt;/xsd:complexType>&lt;/xsd:element> &lt;/xsd:sequence> &lt;/xsd:complexType>&lt;/xsd:schema>]]>&lt;/content>&lt;/response>&lt;/schemas>&lt;/serviceDescription>"
+          hosts="10.235.76.48" environmentProperties="OFS_SOURCE=IIBOFS">
+        <translation xmi:type="utility:ConstantString" string="T24Outbound"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="OutTerminal.Output_1" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out1" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="OutTerminal.Output_1" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.try" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_6" sourceNode="InTerminal.Input_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.catch" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_9" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

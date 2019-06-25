@@ -1,0 +1,41 @@
+DECLARE ns NAMESPACE 'http://ws.crbws.transunion.ke.co/';
+
+DECLARE username,password,code,infinityCode,authPassword,authUsername EXTERNAL CHARACTER '';
+CREATE COMPUTE MODULE CRBACorporate_CreateReq
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET Environment.Variables.Logging.LogType='LogDebug';
+		SET Environment.Variables.Logging.ReferenceId=InputRoot.JSON.Data.ReferenceId;
+		SET Environment.Variables.Logging.Channel=InputRoot.JSON.Data.Channel;
+		SET Environment.Variables.Logging.Operation=InputLocalEnvironment.REST.Input.Operation;
+		SET Environment.Variables.Logging.BackendSystem='CRBA';
+		
+		SET Environment.Variables.Request.Name = 'CRBA';
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'SOAP';
+		SET OutputRoot.HTTPRequestHeader."Authorization" = 'Basic '||base64Encode(CAST(authUsername||':'||authPassword as BLOB CCSID InputRoot.Properties.CodedCharSetId));
+		SET OutputRoot.SOAP.Body.ns:getProduct152.username     = username;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.password     = password;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.code         = code;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.infinityCode = infinityCode;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.companyName  = InputRoot.JSON.Data.CompanyName;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.companyRegNo = InputRoot.JSON.Data.CompanyRegNo;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.reportSector = InputRoot.JSON.Data.ReportSector;
+		SET OutputRoot.SOAP.Body.ns:getProduct152.reportReason = InputRoot.JSON.Data.ReportReason;
+     RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

@@ -1,0 +1,70 @@
+
+
+CREATE COMPUTE MODULE loanStatusEnquiry_LoanStatusEnquiryResponse
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		SET Environment.Variables.Logging.LogType='LogOut';
+		IF InputRoot.XMLNSC.res:SBKSUPPFINDETAILSResponse.ResponseCommon.Status='SUCCESS' THEN
+			CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+			SET OutputRoot.JSON.Data.ResponseCode				=	'00';
+			SET OutputRoot.JSON.Data.ResponseMessage			=	'Success';
+			SET OutputRoot.JSON.Data.ReferenceId				=	Environment.Variables.Logging.ReferenceId;
+			DECLARE LoanAmount DECIMAL 0;
+			IF EXISTS(InputRoot.XMLNSC.res:SBKSUPPFINDETAILSResponse.SBKSUPPFINDETAILS.gSBKSUPPFINDETAILSDetailType.mSBKSUPPFINDETAILSDetailType[]) THEN
+				SET OutputRoot.JSON.Data.AvailableLimit=0;
+				CREATE FIELD OutputRoot.JSON.Data.LoanDetails IDENTITY (JSON.Array);
+				DECLARE i INTEGER 1;
+				FOR SOURCE AS InputRoot.XMLNSC.res:SBKSUPPFINDETAILSResponse.SBKSUPPFINDETAILS.gSBKSUPPFINDETAILSDetailType.mSBKSUPPFINDETAILSDetailType[] DO
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].CustomerId					=	COALESCE(SOURCE.Customer,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].CustomerName				=	COALESCE(SOURCE.CustomerName,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanId						=	COALESCE(SOURCE.LoanId,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanCurrency				=	COALESCE(SOURCE.LoanCurrency,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanAccount				=	COALESCE(SOURCE.LoanAccount,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanProduct				=	COALESCE(SOURCE.LoanProduct,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanStartDate				=	COALESCE(SOURCE.LoanStartDate,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanEndDate				=	COALESCE(SOURCE.MaturityDate,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanInterestRate			=	COALESCE(SOURCE.InterestRate,'');
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanRepaymentAccount		=	COALESCE(SOURCE.RepayAccount,'');
+--					SET OutputRoot.JSON.Data.LoanDetails.Item[i].LoanDisbursedAmount		=	COALESCE(SOURCE.LoanAmount,''); -- OriginalLoanAmount
+--					SET OutputRoot.JSON.Data.LoanDetails.Item[i].TotalPrincipalOutstanding	=	COALESCE(SOURCE.TotalPrincipal,''); -- OutstandingPrincipalAmount
+--					SET OutputRoot.JSON.Data.LoanDetails.Item[i].TotalDueinArrears			=	COALESCE(SOURCE.TotalDue,''); -- ArrearsAmount
+--					SET OutputRoot.JSON.Data.LoanDetails.Item[i].NextPaymentDueAmount		=	COALESCE(SOURCE.NextPayAmt,''); -- NextPaymentDueAmount
+--					SET OutputRoot.JSON.Data.LoanDetails.Item[i].NextPaymentDate			=	COALESCE(SOURCE.NextDueDate,''); -- NextPaymentDate
+					
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].OriginalLoanAmount			=	COALESCE(SOURCE.LoanAmount,''); -- OriginalLoanAmount
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].OutstandingPrincipalAmount	=	COALESCE(SOURCE.TotalPrincipal,''); -- OutstandingPrincipalAmount
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].ArrearsAmount				=	COALESCE(SOURCE.TotalDue,''); -- ArrearsAmount
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].NextPaymentDueAmount		=	COALESCE(SOURCE.NextPayAmt,''); -- NextPaymentDueAmount
+					SET OutputRoot.JSON.Data.LoanDetails.Item[i].NextPaymentDate			=	COALESCE(SOURCE.NextDueDate,''); -- NextPaymentDate
+					SET i=i+1;
+					SET LoanAmount=	LoanAmount+CAST(SOURCE.TotalPrincipal AS DECIMAL);
+				END FOR;
+				SET OutputRoot.JSON.Data.AvailableLimit=Environment.Variables.GlobalLimit+LoanAmount;
+			ELSE
+				SET OutputRoot.JSON.Data.ResponseMessage			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINDETAILSResponse.ResponseCommon.Message, 'No loan exists against the provided entity id');
+			END IF;
+		ELSE
+			CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+			SET OutputRoot.JSON.Data.ResponseCode			=	'01';
+			SET OutputRoot.JSON.Data.ResponseMessage		=	InputRoot.XMLNSC.res:SBKSUPPFINDETAILSResponse.ResponseCommon.Message;
+			SET OutputRoot.JSON.Data.ReferenceId			=	Environment.Variables.Logging.ReferenceId;
+		END IF;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

@@ -1,0 +1,641 @@
+---
+swagger: "2.0"
+info:
+  description: "SupplyChain API"
+  version: "1.0.0"
+  title: "SupplyChain Integration"
+host: "10.235.76.151:7844"
+basePath: "/stanbic/esb/supplychain"
+tags:
+- name: "SupplyChain Integration"
+  description: "Integration with Core Banking System"
+schemes:
+- "https"
+paths:
+  /getToken:
+    post:
+      tags:
+      - "getToken"
+      summary: "Get Token"
+      operationId: "getToken"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Get Token Request"
+        required: true
+        schema:
+          $ref: "#/definitions/getTokenRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/getTokenResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /validateToken:
+    post:
+      tags:
+      - "validateToken"
+      summary: "Validate Token"
+      operationId: "validateToken"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Validate Token Request"
+        required: true
+        schema:
+          $ref: "#/definitions/validateTokenRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/validateTokenResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /createAccount:
+    post:
+      tags:
+      - "createAccount"
+      summary: "Create Account"
+      operationId: "createAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Account Creation Request"
+        required: true
+        schema:
+          $ref: "#/definitions/createAccountRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/createAccountResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /idSearch:
+    post:
+      tags:
+      - "idSearch"
+      summary: "Id Search"
+      operationId: "idSearch"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "ID Search Request"
+        required: true
+        schema:
+          $ref: "#/definitions/idSearchRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/idSearchResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /CRBACorporate:
+    post:
+      tags:
+      - "CRBACorporate"
+      summary: "CRBACorporate"
+      operationId: "CRBACorporate"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "CRBACorporate Request"
+        required: true
+        schema:
+          $ref: "#/definitions/CRBACorporateRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/CRBACorporateResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /CRBAConsumer:
+    post:
+      tags:
+      - "CRBAConsumer"
+      summary: "CRBAConsumer"
+      operationId: "CRBAConsumer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "CRBAConsumer Request"
+        required: true
+        schema:
+          $ref: "#/definitions/CRBAConsumerRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/CRBAConsumerResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /loanApplication:
+    post:
+      tags:
+      - "loanApplication"
+      summary: "Loan Application"
+      operationId: "loanApplication"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Loan Application Request"
+        required: true
+        schema:
+          $ref: "#/definitions/loanApplicationRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/loanApplicationResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /loanStatusEnquiry:
+    post:
+      tags:
+      - "loanStatusEnquiry"
+      summary: "Loan Status Enquiry"
+      operationId: "loanStatusEnquiry"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Loan Status Enquiry Request"
+        required: true
+        schema:
+          $ref: "#/definitions/loanStatusEnquiryRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/loanStatusEnquiryResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /getLimit:
+    post:
+      tags:
+      - "getLimit"
+      summary: "Get Limit"
+      operationId: "getLimit"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Get Limit Request"
+        required: true
+        schema:
+          $ref: "#/definitions/getLimitRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/getLimitResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /getLoanCharges:
+    post:
+      tags:
+      - "getLoanCharges"
+      summary: "Get Loan Charges"
+      operationId: "getLoanCharges"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Get Loan Charges"
+        required: true
+        schema:
+          $ref: "#/definitions/getLoanChargesRequest"
+      responses:
+        200:
+          description: "Successfully processed"
+          schema:
+            $ref: "#/definitions/getLoanChargesResponse"
+        default:
+          description: "Processing failed"
+          schema:
+            $ref: "#/definitions/errorMessage"
+definitions:
+  createAccountRequest:
+    type: "object"
+    properties:
+      CompanyName:
+        type: "string"
+      PhysicalAddress:
+        type: "string"
+      Industry:
+        type: "string"
+      IdType:
+        type: "string"
+      RegistrationNo:
+        type: "string"
+      TaxPin:
+        type: "string"
+      IdIssueDate:
+        type: "string"
+      IssueAuthority:
+        type: "string"
+      OperatingCountry:
+        type: "string"
+      PostalCode:
+        type: "string"
+      AMLFlag:
+        type: "string"
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      CustomerDetails:
+        type: "array"
+        items:
+          $ref: "#/definitions/CustomerDetailsRef"
+  createAccountResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+  CustomerDetailsRef:
+    type: "object"
+    properties:
+      DateOfBirth:
+        type: "string"
+      Gender:
+        type: "string"
+      IdType:
+        type: "string"
+      IdNumber:
+        type: "string"
+      IssueAuthority:
+        type: "string"
+      Name:
+        type: "string"
+      Nationality:
+        type: "string"
+      Residence:
+        type: "string"
+      Industry:
+        type: "string"
+      IdIssueDate:
+        type: "string"
+      IdExpiryDate:
+        type: "string"
+      TaxPin:
+        type: "string"
+      StreetName:
+        type: "string"
+  idSearchRequest:
+    type: "object"
+    properties:
+      IdNumber:
+        type: "string"
+      IdType:
+        type: "string"
+      IssueAuth:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      Channel:
+        type: "string"
+  idSearchResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      Accnumber:
+        type: "string"
+  CRBAConsumerRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      username:
+        type: "string"
+      password:
+        type: "string"
+      code:
+        type: "string"
+      infinityCode:
+        type: "string"
+      name1:
+        type: "string"
+      name2:
+        type: "string"
+      nationalID:
+        type: "string"
+      reportSector:
+        type: "string"
+      reportReason:
+        type: "string"
+  CRBAConsumerResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      credit:
+        type: "string"
+  CRBACorporateRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      username:
+        type: "string"
+      password:
+        type: "string"
+      code:
+        type: "string"
+      infinityCode:
+        type: "string"
+      companyName:
+        type: "string"
+      companyRegNo:
+        type: "string"
+      reportSector:
+        type: "string"
+      reportReason:
+        type: "string"
+  CRBACorporateResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      status:
+        type: "string"
+  errorMessage:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+  loanApplicationRequest:
+    type: "object"
+    properties:
+      ReferenceId:
+        type: "string"
+      Channel:
+        type: "string"
+      Currency:
+        type: "string"
+      Amount:
+        type: "string"
+      Term:
+        type: "string"
+      DisbursementAccount:
+        type: "string"
+      LoanType:
+        type: "string"
+      InvoiceNumber:
+        type: "string"
+      EntityId:
+        type: "string"
+      AnchorId:
+        type: "string"
+  loanApplicationResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      TransactionId:
+        type: "string"
+  loanStatusEnquiryRequest:
+    type: "object"
+    properties:
+      ReferenceId:
+        type: "string"
+      Channel:
+        type: "string"
+      EntityId:
+        type: "string"
+      AnchorId:
+        type: "string"
+  loanStatusEnquiryResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      AvailableLimit:
+        type: "string"
+      LoanDetails:
+        type: "array"
+        items:
+          $ref: "#/definitions/LoanDetails"
+  LoanDetails:
+    type: "object"
+    properties:
+      CustomerId:
+        type: "string"
+      CustomerName:
+        type: "string"
+      LoanId:
+        type: "string"
+      LoanCurrency:
+        type: "string"
+      LoanAccount:
+        type: "string"
+      LoanProduct:
+        type: "string"
+      LoanStartDate:
+        type: "string"
+      LoanEndDate:
+        type: "string"
+      LoanInterestRate:
+        type: "string"
+      LoanRepaymentAccount:
+        type: "string"
+      LoanDisbursedAmount:
+        type: "string"
+      TotalPrincipalOutstanding:
+        type: "string"
+      TotalDueinArrears:
+        type: "string"
+      NextPaymentDueAmount:
+        type: "string"
+      NextPaymentDate:
+        type: "string"
+  getLimitRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      EntityId:
+        type: "string"
+      AnchorId:
+        type: "string"
+  getLimitResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      AnchorLimits:
+        type: "array"
+        items:
+          $ref: "#/definitions/AnchorLimitsRef"
+  AnchorLimitsRef:
+    type: "object"
+    properties:
+      CurrencyCode:
+        type: "string"
+      Limit:
+        type: "string"
+      AsAt:
+        type: "string"
+      Name:
+        type: "string"
+      Code:
+        type: "string"
+      ID:
+        type: "string"
+  getLoanChargesRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      EntityId:
+        type: "string"
+      AnchorId:
+        type: "string"
+      LoanAmount:
+        type: "string"
+  getLoanChargesResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+  getTokenRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+  getTokenResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      Token:
+        type: "string"
+  validateTokenRequest:
+    type: "object"
+    properties:
+      Channel:
+        type: "string"
+      ReferenceId:
+        type: "string"
+      Token:
+        type: "string"
+      SourceIp:
+        type: "string"
+  validateTokenResponse:
+    type: "object"
+    properties:
+      ResponseCode:
+        type: "string"
+      ResponseMessage:
+        type: "string"
+      ReferenceId:
+        type: "string"

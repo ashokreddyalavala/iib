@@ -1,0 +1,63 @@
+DECLARE wmb NAMESPACE 'http://www.ibm.com/xmlns/prod/websphere/messagebroker/6.1.0/monitoring/event';
+
+CREATE DATABASE MODULE SupplyChain_Logging_Database
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE LocalTxnId,ReferenceId,CombReferenceId,NodeName,TerminalName,FlowName,ReqData,LogType,ErrorCode,ErrorDescription,Channel,RequestType,BackendSystem,TransactionReference,DecryptedData CHARACTER;
+		DECLARE ReqTime TIMESTAMP;
+		DECLARE InsertTransactionDetails BOOLEAN;
+		SET LocalTxnId		=	Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:eventData.wmb:eventCorrelation.wmb:localTransactionId;
+		--SET ReqTime			=	CAST(CAST(REPLACE(SUBSTRING(Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:eventData.wmb:eventSequence.wmb:creationTime FROM 1 FOR 23),'T',' ') AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS')+INTERVAL '3' HOUR AS CHARACTER FORMAT 'dd-MM-yyyy HH:mm:ss.SSS');
+		SET ReqTime			=	CAST(REPLACE(SUBSTRING(Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:eventData.wmb:eventSequence.wmb:creationTime  FROM 1 FOR 23) ,'T',' ') AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS')+INTERVAL '3' HOUR;
+		SET FlowName		=	Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:messageFlowData.wmb:messageFlow.wmb:name;
+		SET NodeName		=	Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:messageFlowData.wmb:node.wmb:nodeLabel;
+		SET TerminalName	=	Root.XMLNSC.wmb:event.wmb:eventPointData.wmb:messageFlowData.wmb:node.wmb:terminal;
+		SET ReqData			=	CAST(CAST(Root.XMLNSC.wmb:event.wmb:bitstreamData.wmb:bitstream AS BLOB) AS CHARACTER CCSID 1208);
+		SET LogType			=	'';
+		FOR SOURCE AS Root.XMLNSC.wmb:event.wmb:applicationData.wmb:simpleContent[] DO
+--			IF SOURCE.wmb:name='LogType' THEN
+--				SET LogType				=	SOURCE.wmb:value;
+--			ELSEIF SOURCE.wmb:name='Id' OR SOURCE.wmb:name='TransactionReferenceNumber' THEN
+--				SET TransRefNum			=	SOURCE.wmb:value;
+--			ELSEIF SOURCE.wmb:name		=	'ErrorCode' THEN
+--				SET ErrorCode			=	SOURCE.wmb:value;
+--			ELSEIF SOURCE.wmb:name		=	'ErrorDescription' THEN
+--				SET ErrorDescription	=	SOURCE.wmb:value;	
+--			END IF;	
+			
+			CASE SOURCE.wmb:name 
+				WHEN 'LogType' THEN SET LogType	=	SOURCE.wmb:value;
+				WHEN 'ReferenceId' THEN SET ReferenceId	=	SOURCE.wmb:value;
+				WHEN 'ErrorCode' THEN SET ErrorCode	=	SOURCE.wmb:value;
+				WHEN 'ErrorDescription' THEN SET ErrorDescription	=	SOURCE.wmb:value;
+				WHEN 'Channel' THEN SET Channel	=	SOURCE.wmb:value;
+				WHEN 'Operation' THEN SET RequestType	=	SOURCE.wmb:value;
+				--WHEN 'Status' THEN SET Status	=	SOURCE.wmb:value;
+				WHEN 'BackendSystem' THEN SET BackendSystem	=	SOURCE.wmb:value;
+				WHEN 'InsertTransactionDetails' THEN SET InsertTransactionDetails =	SOURCE.wmb:value;
+				WHEN 'TransactionReference' THEN SET TransactionReference =	SOURCE.wmb:value;
+				WHEN 'DecryptedData' THEN SET DecryptedData = SOURCE.wmb:value;
+			END CASE;
+				
+		END FOR;
+		
+		SET CombReferenceId	=	COALESCE(Channel,'')||COALESCE(ReferenceId,'');
+		IF LogType='' THEN
+			INSERT INTO Database.ESB.SUPPLYCHAIN_REQ_RESP (LOCAL_TXN_ID,REQUEST_TIME,REQUEST_DATA,FLOW_NAME,NODE_NAME,TERMINAL_NAME,SOURCE_SYSTEM,REQUEST_TYPE,REFERENCE_NUMBER) VALUES(LocalTxnId,ReqTime,ReqData,FlowName,NodeName,TerminalName,Channel,RequestType,CombReferenceId);
+--		ELSEIF LogType='LogIn' THEN
+--			UPDATE Database.ESB.REQ_RESP AS A SET REFERENCE_NUMBER=CombReferenceId, SOURCE_SYSTEM=Channel,REQUEST_TYPE=RequestType,REQUEST_TIME=ReqTime,PAYLOAD=DecryptedData, FLOW_NAME=FlowName,NODE_NAME=NodeName ,TERMINAL_NAME= TerminalName WHERE A.LOCAL_TXN_ID=LocalTxnId;
+--			INSERT INTO Database.ESB.REQ_RESP (REFERENCE_NUMBER,SOURCE_SYSTEM,REQUEST_TYPE,REQUEST_TIME,REQUEST_DATA,FLOW_NAME,NODE_NAME,TERMINAL_NAME,LOCAL_TXN_ID) 
+--											VALUES(ReferenceId,Channel,RequestType,ReqTime,ReqData,FlowName,NodeName,TerminalName,LocalTxnId);
+		ELSEIF LogType='LogDebug' THEN
+			INSERT INTO Database.ESB.SUPPLYCHAIN_DEBUG_STATUS (REFERENCE_NUMBER,BACKEND_SYSTEM,EVENT_TIME,TRANSACTION_DATA,FLOW_NAME,NODE_NAME,TERMINAL_NAME,LOCAL_TXN_ID) 
+												VALUES(CombReferenceId,BackendSystem,ReqTime,ReqData,FlowName,NodeName,TerminalName,LocalTxnId);
+		ELSEIF LogType='LogOut' THEN
+			UPDATE Database.ESB.SUPPLYCHAIN_REQ_RESP AS A SET RESPONSE_DATA=ReqData, RESPONSE_TIME=ReqTime,FLOW_NAME=FlowName,NODE_NAME=NodeName,TERMINAL_NAME=TerminalName, STATUS='Success' WHERE A.LOCAL_TXN_ID=LocalTxnId;
+		ELSEIF LogType='LogError' THEN
+			UPDATE Database.ESB.SUPPLYCHAIN_REQ_RESP AS A SET RESPONSE_DATA=ReqData, RESPONSE_TIME=ReqTime, ERROR_CODE=ErrorCode,ERROR_DESCRIPTION=ErrorDescription, FLOW_NAME=FlowName,NODE_NAME=NodeName,TERMINAL_NAME=TerminalName,STATUS='Failure' WHERE A.LOCAL_TXN_ID=LocalTxnId;
+		END IF;
+		
+		RETURN TRUE;
+	END;
+
+END MODULE;

@@ -1,0 +1,86 @@
+DECLARE res NAMESPACE 'http://www.temenos.com/T24/ofs/Response';
+
+CREATE COMPUTE MODULE createAccount_Process_Resp
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		
+		IF Environment.Variables.RequestType='Director' THEN
+			IF InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Status='SUCCESS' THEN
+				SET Environment.Variables.Director.id[Environment.Variables.CustomerCount]	=	InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.CUSTOMER.id;
+				SET Environment.Variables.CustomerCount=Environment.Variables.CustomerCount+1;
+				RETURN FALSE;
+			ELSE
+				IF CONTAINS(InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Message,'In Use By Customer ') THEN
+					SET Environment.Variables.Director.id[Environment.Variables.CustomerCount]	=	SUBSTRING(SUBSTRING(InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Message AFTER 'In Use By Customer ') BEFORE ' ');
+					SET Environment.Variables.CustomerCount=Environment.Variables.CustomerCount+1;
+					RETURN FALSE;
+				ELSE
+					SET Environment.Variables.Logging.LogType='LogOut';
+					SET Environment.Variables.JointCustomer.Status = 'FAILED';
+					CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+					SET OutputRoot.JSON.Data.ResponseCode='2001';
+					SET OutputRoot.JSON.Data.ResponseMessage=InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Message;
+					SET OutputRoot.JSON.Data.ReferenceId=Environment.Variables.Logging.ReferenceId;
+				END IF;
+			END IF;
+		ELSEIF Environment.Variables.RequestType='Company' THEN
+			IF InputRoot.XMLNSC.res:CUSTOMERSCCSBNONPERSONALResponse.ResponseCommon.Status='SUCCESS' THEN
+				SET Environment.Variables.Comapny.id	=	InputRoot.XMLNSC.res:CUSTOMERSCCSBNONPERSONALResponse.CUSTOMER.id;
+				RETURN FALSE;
+			ELSE
+				SET Environment.Variables.Logging.LogType='LogOut';
+				SET Environment.Variables.JointCustomer.Status = 'FAILED';
+				SET OutputRoot.JSON.Data.ResponseCode='2001';
+				SET OutputRoot.JSON.Data.ResponseMessage=InputRoot.XMLNSC.res:CUSTOMERSCCSBNONPERSONALResponse.ResponseCommon.Message;
+				SET OutputRoot.JSON.Data.ReferenceId=Environment.Variables.Logging.ReferenceId;		
+			END IF;
+		ELSEIF Environment.Variables.RequestType='Account' THEN
+			SET Environment.Variables.Logging.LogType='LogOut';
+			CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+			IF InputRoot.XMLNSC.res:ACCOUNTSCCORPCALCYResponse.ResponseCommon.Status='SUCCESS' THEN
+				SET OutputRoot.JSON.Data.ResponseCode='00';
+				SET OutputRoot.JSON.Data.ResponseMessage='Success';	
+				SET OutputRoot.JSON.Data.ReferenceId=Environment.Variables.Logging.ReferenceId;
+				SET OutputRoot.JSON.Data.AccountNumber=InputRoot.XMLNSC.res:ACCOUNTSCCORPCALCYResponse.ACCOUNT.id;
+				SET OutputRoot.JSON.Data.CustomerNumber=InputRoot.XMLNSC.res:ACCOUNTSCCORPCALCYResponse.ACCOUNT.CUSTOMER;
+				
+			ELSE
+				SET OutputRoot.JSON.Data.ResponseCode='2001';
+				SET OutputRoot.JSON.Data.ResponseMessage=InputRoot.XMLNSC.res:ACCOUNTSCCORPCALCYResponse.ResponseCommon.Message;	
+				SET OutputRoot.JSON.Data.ReferenceId=Environment.Variables.Logging.ReferenceId;	
+		
+			END IF;
+		ELSEIF Environment.Variables.RequestType='NonCorporate' THEN
+			IF InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Status='SUCCESS' THEN
+				SET Environment.Variables.Individual.id	=	InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.CUSTOMER.id;
+				RETURN FALSE;
+			ELSE
+				SET Environment.Variables.Logging.LogType='LogOut';
+				SET Environment.Variables.JointCustomer.Status = 'FAILED';
+				SET OutputRoot.JSON.Data.ResponseCode='2001';
+				SET OutputRoot.JSON.Data.ResponseMessage=InputRoot.XMLNSC.res:CUSTOMERONBOARDINGPERSONALResponse.ResponseCommon.Message;
+				SET OutputRoot.JSON.Data.ReferenceId=Environment.Variables.Logging.ReferenceId;	
+		
+			END IF;		
+		END IF;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;
+

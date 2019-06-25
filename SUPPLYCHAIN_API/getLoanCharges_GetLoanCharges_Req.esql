@@ -1,0 +1,50 @@
+
+
+CREATE COMPUTE MODULE getLoanCharges_GetLoanCharges_Req
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		SET Environment.Variables.Logging.ReferenceId=InputRoot.JSON.Data.ReferenceId;
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'XMLNSC';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.CompanyCode	=	'KE0010001';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.GtsControl	=	'';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.MessageId	=	'';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.NoOfAuth	=	'';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.Operation	=	'PROCESS';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.Replace	=	'';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.RequestCommon.UserName	=	'AGENCY01';
+		
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[1].Field	=	'ENTITY.ID';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[1].Operator	=	'EQ';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[1].Value	=	COALESCE(InputRoot.JSON.Data.EntityId,'');
+		
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[2].Field	=	'LOAN.TYPE';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[2].Operator	=	'EQ';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[2].Value	=	COALESCE(InputRoot.JSON.Data.LoanType,'');
+		
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[3].Field	=	'LOAN.AMOUNT';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[3].Operator	=	'EQ';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[3].Value	=	COALESCE(InputRoot.JSON.Data.LoanAmount,'');
+		
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[4].Field	=	'ANCHOR.ID';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[4].Operator	=	'EQ';
+		SET OutputRoot.XMLNSC.req:SBKSUPPFINCHRGDETSRequest.EnquiryInput.EnquiryCriteriaCollection.EnquiryCriteria[4].Value	=	COALESCE(InputRoot.JSON.Data.AnchorId,'');
+		
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

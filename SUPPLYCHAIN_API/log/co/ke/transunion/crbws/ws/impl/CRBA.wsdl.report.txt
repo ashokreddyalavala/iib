@@ -1,0 +1,134 @@
+
+
+Importing file: C:\Users\Pulla Reddy\IBM\IIBT10\SupplyChain\SUPPLYCHAIN_API\CRBA.wsdl
+
+The WSDL import will proceed with bindings ControllerKenyaImplPortBinding.
+Creating wsdl schema document for file:///C:/Users/Pulla Reddy/IBM/IIBT10/SupplyChain/SUPPLYCHAIN_API/CRBA.wsdl.
+Parsing wsdl binding {http://impl.ws.crbws.transunion.ke.co/}ControllerKenyaImplPortBinding.
+Parsing wsdl binding input getProduct406.
+Parsing wsdl binding output getProduct406.
+Parsing wsdl binding input getServerInfo.
+Parsing wsdl binding output getServerInfo.
+Parsing wsdl binding input getCreditBal.
+Parsing wsdl binding output getCreditBal.
+Parsing wsdl binding input getProduct112.
+Parsing wsdl binding output getProduct112.
+Parsing wsdl binding input getProduct110.
+Parsing wsdl binding output getProduct110.
+Parsing wsdl binding input getProduct151.
+Parsing wsdl binding output getProduct151.
+Parsing wsdl binding input getProduct104.
+Parsing wsdl binding output getProduct104.
+Parsing wsdl binding input getProduct114.
+Parsing wsdl binding output getProduct114.
+Parsing wsdl binding input getProduct126.
+Parsing wsdl binding output getProduct126.
+Parsing wsdl binding input getProduct402.
+Parsing wsdl binding output getProduct402.
+Parsing wsdl binding input getProduct100.
+Parsing wsdl binding output getProduct100.
+Parsing wsdl binding input getProduct150.
+Parsing wsdl binding output getProduct150.
+Parsing wsdl binding input getProduct107.
+Parsing wsdl binding output getProduct107.
+Parsing wsdl binding input getProduct102.
+Parsing wsdl binding output getProduct102.
+Parsing wsdl binding input getProduct153.
+Parsing wsdl binding output getProduct153.
+Parsing wsdl binding input getProduct109.
+Parsing wsdl binding output getProduct109.
+Parsing wsdl binding input getProduct121.
+Parsing wsdl binding output getProduct121.
+Parsing wsdl binding input getProduct401.
+Parsing wsdl binding output getProduct401.
+Parsing wsdl binding input getProduct403.
+Parsing wsdl binding output getProduct403.
+Parsing wsdl binding input getProduct124.
+Parsing wsdl binding output getProduct124.
+Parsing wsdl binding input getProduct405.
+Parsing wsdl binding output getProduct405.
+Parsing wsdl binding input getProduct159.
+Parsing wsdl binding output getProduct159.
+Parsing wsdl binding input getProduct103.
+Parsing wsdl binding output getProduct103.
+Parsing wsdl binding input getProduct101.
+Parsing wsdl binding output getProduct101.
+Parsing wsdl binding input getProduct105.
+Parsing wsdl binding output getProduct105.
+Parsing wsdl binding input getProduct152.
+Parsing wsdl binding output getProduct152.
+Parsing wsdl binding input getProduct108.
+Parsing wsdl binding output getProduct108.
+Parsing wsdl binding input getProduct136.
+Parsing wsdl binding output getProduct136.
+Parsing wsdl binding input getProduct118.
+Parsing wsdl binding output getProduct118.
+Parsing wsdl binding input getProduct115.
+Parsing wsdl binding output getProduct115.
+Parsing wsdl binding input getProduct116.
+Parsing wsdl binding output getProduct116.
+Parsing wsdl binding input getProduct137.
+Parsing wsdl binding output getProduct137.
+Parsing wsdl binding input getProduct132.
+Parsing wsdl binding output getProduct132.
+Parsing wsdl binding input getProduct122.
+Parsing wsdl binding output getProduct122.
+Parsing wsdl binding input getProduct163.
+Parsing wsdl binding output getProduct163.
+Parsing wsdl binding input getProduct125.
+Parsing wsdl binding output getProduct125.
+Parsing wsdl binding input getProduct130.
+Parsing wsdl binding output getProduct130.
+Parsing wsdl binding input getProduct131.
+Parsing wsdl binding output getProduct131.
+Processing doc style for operation getProduct406.
+Processing doc style for operation getServerInfo.
+Processing doc style for operation getCreditBal.
+Processing doc style for operation getProduct112.
+Processing doc style for operation getProduct110.
+Processing doc style for operation getProduct151.
+Processing doc style for operation getProduct104.
+Processing doc style for operation getProduct114.
+Processing doc style for operation getProduct126.
+Processing doc style for operation getProduct402.
+Processing doc style for operation getProduct100.
+Processing doc style for operation getProduct150.
+Processing doc style for operation getProduct107.
+Processing doc style for operation getProduct102.
+Processing doc style for operation getProduct153.
+Processing doc style for operation getProduct109.
+Processing doc style for operation getProduct121.
+Processing doc style for operation getProduct401.
+Processing doc style for operation getProduct403.
+Processing doc style for operation getProduct124.
+Processing doc style for operation getProduct405.
+Processing doc style for operation getProduct159.
+Processing doc style for operation getProduct103.
+Processing doc style for operation getProduct101.
+Processing doc style for operation getProduct105.
+Processing doc style for operation getProduct152.
+Processing doc style for operation getProduct108.
+Processing doc style for operation getProduct136.
+Processing doc style for operation getProduct118.
+Processing doc style for operation getProduct115.
+Processing doc style for operation getProduct116.
+Processing doc style for operation getProduct137.
+Processing doc style for operation getProduct132.
+Processing doc style for operation getProduct122.
+Processing doc style for operation getProduct163.
+Processing doc style for operation getProduct125.
+Processing doc style for operation getProduct130.
+Processing doc style for operation getProduct131.
+Populating WSDL schema CRBA.xsd.
+Creating file CRBA.xsd in the workspace.
+Creating file /SUPPLYCHAIN_API/CRBARef_InlineSchema1.xsd in the workspace.
+Copying source WSDL CRBARef.wsdl to CRBARef.wsdl.
+Copying source WSDL CRBA.wsdl to CRBA.wsdl.
+
+Elapsed time processing this message definition file: 2.581 seconds
+Number of warnings for this message definition file: 0
+
+
+Number of files processed: 1
+
+

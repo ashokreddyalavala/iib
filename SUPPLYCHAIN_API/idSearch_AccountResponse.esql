@@ -1,0 +1,66 @@
+
+
+CREATE COMPUTE MODULE idSearch_AccountResponse
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+					DECLARE ns18 NAMESPACE 'http://www.temenos.com/T24/ofs/Response';						 	
+					DECLARE Count INTEGER 1;
+					IF EXISTS(InputRoot.XMLNSC.*:EONBCUSTACCOUNTSResponse.EONBCUSTACCOUNTS.gEONBCUSTACCOUNTSDetailType.mEONBCUSTACCOUNTSDetailType[]) THEN
+						CREATE FIELD OutputRoot.JSON.Data.AccountDetails IDENTITY (JSON.Array);
+						DECLARE outRef REFERENCE TO OutputRoot.JSON.Data.AccountDetails;
+						FOR custAccounts AS InputRoot.XMLNSC.*:EONBCUSTACCOUNTSResponse.EONBCUSTACCOUNTS.gEONBCUSTACCOUNTSDetailType.mEONBCUSTACCOUNTSDetailType[] DO
+							SET outRef.Item[Count].CusActive       = custAccounts.CUSACTIVE;
+							SET outRef.Item[Count].Customer 	   = custAccounts.Customer;			
+							SET outRef.Item[Count].Accountnumber   = custAccounts.Accountnumber;
+							SET outRef.Item[Count].Currentbalance  = custAccounts.Currentbalance;				
+							SET outRef.Item[Count].Customerdormant = custAccounts.Customerdormant;
+							SET outRef.Item[Count].CustomerNo 	   = custAccounts.CustomerNo;
+							SET outRef.Item[Count].Noofaccounts    = custAccounts.Noofaccounts;
+							SET outRef.Item[Count].Openingdate 	   = custAccounts.Openingdate;
+							SET outRef.Item[Count].Producttype 	   = custAccounts.Producttype;
+							SET Count = Count+1;
+						END FOR;
+							SET OutputRoot.JSON.Data.ResponseType      = 'T24';	
+							SET OutputRoot.JSON.Data.ResponseCode      = '00';
+							SET OutputRoot.JSON.Data.ResponseMessage   = 'Success';	
+							SET Environment.CustInfo.Data.CusActive    = 'ACTIVE';											
+							SET OutputRoot.JSON.Data.ReferenceId       = COALESCE(Environment.Variables.Inputparms.ReferenceId);
+							SET OutputRoot.JSON.Data.T24Status		   =  Environment.Variables.Status.T24; 
+							SET OutputRoot.JSON.Data.DataLakeStatus    =  Environment.Variables.Status.DataLake;
+							SET OutputRoot.JSON.Data.IPRSStatus		   =  Environment.Variables.Status.DataLake;
+							SET Environment.Variables.Logging.LogType='LogOut';	
+					ELSE		
+						
+						    SET OutputRoot.JSON.Data.ResponseType      = 'T24';	
+							SET OutputRoot.JSON.Data.ResponseCode      = '00';
+							SET OutputRoot.JSON.Data.ResponseMessage   = 'Success';	
+							SET Environment.CustInfo.Data.CusActive    = 'ACTIVE';	
+							SET OutputRoot.JSON.Data.CusActive         =  Environment.CustInfo.Data.CusActive;
+							SET OutputRoot.JSON.Data.Customer 	       =  Environment.CustInfo.Data.Customer;	
+							SET OutputRoot.JSON.Data.CustomerBranch	   =  Environment.CustInfo.Data.CustomerBranch;
+							SET OutputRoot.JSON.Data.Name			   =  Environment.CustInfo.Data.Name;											
+							SET OutputRoot.JSON.Data.ReferenceId       = COALESCE(Environment.Variables.Inputparms.ReferenceId);
+							SET OutputRoot.JSON.Data.T24Status		   =  Environment.Variables.Status.T24; 
+							SET OutputRoot.JSON.Data.DataLakeStatus    =  Environment.Variables.Status.DataLake;
+							SET OutputRoot.JSON.Data.IPRSStatus		   =  Environment.Variables.Status.DataLake;
+							SET Environment.Variables.Logging.LogType='LogOut';
+					END IF;
+			RETURN TRUE;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

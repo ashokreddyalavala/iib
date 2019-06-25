@@ -1,0 +1,101 @@
+
+
+CREATE COMPUTE MODULE getToken_GetToken_Req_Resp
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		SET Environment.AuthDetails[]=SELECT * FROM Database.ESB.AUTH_DETIALS AS A WHERE A.IPADDRESS=InputRoot.HTTPInputHeader."X-Forwarded-For";
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+		IF EXISTS(Environment.AuthDetails[]) THEN
+			SET Environment.Authorization	=	CAST(BASE64DECODE(SUBSTRING(InputRoot.HTTPInputHeader.Authorization AFTER 'Basic ')) AS CHARACTER CCSID 1208);
+			SET Environment.UserName	=	SUBSTRING(Environment.Authorization BEFORE ':');
+			SET Environment.Password	=	SUBSTRING(Environment.Authorization AFTER ':');
+			
+			IF Environment.AuthDetails.USERNAME<>Environment.UserName THEN
+				SET OutputRoot.JSON.Data.ResponseCode		=	'02';
+				SET OutputRoot.JSON.Data.ResponseMessage	=	'Invalid user name';
+				PROPAGATE TO TERMINAL 'out1';
+				RETURN FALSE;
+			ELSEIF Environment.AuthDetails.PASSWORD<>Environment.Password THEN
+				SET OutputRoot.JSON.Data.ResponseCode		=	'03';
+				SET OutputRoot.JSON.Data.ResponseMessage	=	'Invalid password';
+				PROPAGATE TO TERMINAL 'out1';
+				RETURN FALSE;
+			ELSE
+					
+					--SET Environment.EncryptedToken	=	
+				--IF COALESCE(TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Remote-Addr"}.Token,'')='' THEN	
+				IF COALESCE(TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.Token,'')='' THEN			
+					SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+					SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+					SET OutputRoot.JSON.Data.Token				=	UUIDASCHAR;--encryptToken(CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'HH:mm:ss.SSS'));
+--					SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Remote-Addr"}.Token=OutputRoot.JSON.Data.Token;
+--					SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Remote-Addr"}.TokenTimestamp=CURRENT_TIMESTAMP;
+					SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.Token=OutputRoot.JSON.Data.Token;
+					SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.TokenTimestamp=CURRENT_TIMESTAMP;
+				ELSE
+					
+					--SET Environment.DecryptTokenValue	=	decryptToken(TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Remote-Addr"}.Token);
+					IF TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.TokenTimestamp+INTERVAL '50' MINUTE < CURRENT_TIMESTAMP THEN
+					
+					--IF CAST(Environment.DecryptTokenValue AS TIMESTAMP FORMAT 'dd-MM-yyyy HH:mm:ss.SSS')+INTERVAL '10' SECOND < CURRENT_TIMESTAMP THEN
+						SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+						SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+						SET OutputRoot.JSON.Data.Token				=	UUIDASCHAR;--encryptToken(CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'HH:mm:ss.SSS'));
+						SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.Token=OutputRoot.JSON.Data.Token;
+						SET TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.TokenTimestamp=CURRENT_TIMESTAMP;
+					ELSE
+						SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+						SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+						SET OutputRoot.JSON.Data.Token				=	TOKENDETAILS.{InputRoot.HTTPInputHeader."X-Forwarded-For"}.Token;
+					END IF;
+					
+				END IF;
+				/*
+				SET Environment.TokenDetails[]=SELECT * FROM Database.ESB.TOKEN_DETAILS AS A WHERE A.IPADDRESS=InputRoot.HTTPInputHeader."X-Remote-Addr";
+				IF EXISTS(Environment.TokenDetails[]) THEN
+					IF (CAST(Environment.TokenDetails.CREATIONTIME AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS')+INTERVAL '10' MINUTE) <= CURRENT_TIMESTAMP THEN
+						DECLARE UniqueId CHARACTER UUIDASCHAR;
+--						INSERT INTO Database.ESB.TOKEN_DETAILS (IPADDRESS,TOKEN,CREATIONTIME) VALUES (InputRoot.HTTPInputHeader."X-Remote-Addr",UniqueId,CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd HH:mm:ss.SSS'));
+						UPDATE Database.ESB.TOKEN_DETAILS AS A SET TOKEN=UniqueId, CREATIONTIME=CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd HH:mm:ss.SSS') WHERE A.IPADDRESS=InputRoot.HTTPInputHeader."X-Remote-Addr";
+						SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+						SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+						SET OutputRoot.JSON.Data.Token		=	UniqueId;
+					ELSE
+						SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+						SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+						SET OutputRoot.JSON.Data.Token		=	Environment.TokenDetails.TOKEN;
+					END IF;
+				ELSE 
+					DECLARE UniqueId CHARACTER UUIDASCHAR;
+					INSERT INTO Database.ESB.TOKEN_DETAILS (IPADDRESS,TOKEN,CREATIONTIME) VALUES (InputRoot.HTTPInputHeader."X-Remote-Addr",UniqueId,CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd HH:mm:ss.SSS'));
+					SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+					SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+					SET OutputRoot.JSON.Data.Token		=	UniqueId;
+					
+				END IF;
+				*/
+				
+			END IF;
+		ELSE
+			SET OutputRoot.JSON.Data.ResponseCode		=	'01';
+			SET OutputRoot.JSON.Data.ResponseMessage	=	'Unauthorized access';
+		END IF;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

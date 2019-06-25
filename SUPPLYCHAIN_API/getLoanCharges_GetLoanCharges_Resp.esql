@@ -1,0 +1,39 @@
+
+
+CREATE COMPUTE MODULE getLoanCharges_GetLoanCharges_Resp
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		IF InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.ResponseCommon.Status='SUCCESS' THEN
+			SET OutputRoot.JSON.Data.ResponseCode		=	'00';
+			SET OutputRoot.JSON.Data.ResponseMessage	=	'Success';
+			SET OutputRoot.JSON.Data.ReferenceId		=	Environment.Variables.Logging.ReferenceId;
+			SET OutputRoot.JSON.Data.EntityId			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.EntityId,'');
+			SET OutputRoot.JSON.Data.EntityName			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.Entityname,'');
+			SET OutputRoot.JSON.Data.LoanType			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.LoanType,'');
+			SET OutputRoot.JSON.Data.LoanAmount			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.LoanAmount,'');
+			SET OutputRoot.JSON.Data.LoanCharge			=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.LoanChrg,'');
+			SET OutputRoot.JSON.Data.LoandAndChargeAmount	=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.SBKSUPPFINCHRGDETS.gSBKSUPPFINCHRGDETSDetailType.mSBKSUPPFINCHRGDETSDetailType.TotalLoanAmount,'');
+		ELSE 
+			SET OutputRoot.JSON.Data.ResponseCode		=	'2001';
+			SET OutputRoot.JSON.Data.ResponseMessage	=	COALESCE(InputRoot.XMLNSC.res:SBKSUPPFINCHRGDETSResponse.ResponseCommon.Message,'');
+			SET OutputRoot.JSON.Data.ReferenceId		=	Environment.Variables.Logging.ReferenceId;
+		END IF;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

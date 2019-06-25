@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:restapiDescriptor xmlns="http://com.ibm.etools.mft.descriptor.base" xmlns:ns2="http://com.ibm.etools.mft.descriptor.restapi" definitionType="swagger_20" definitionFile="SupplyChain.yaml" implementation="gen/SUPPLYCHAIN_API.msgflow" https="false">
+    <references>
+        <sharedLibraryReference>
+            <libraryName>SUPPLYCHAIN_LIB</libraryName>
+        </sharedLibraryReference>
+    </references>
+    <ns2:operations>
+        <ns2:operation name="CRBAConsumer" implementation="CRBAConsumer.subflow"/>
+        <ns2:operation name="CRBACorporate" implementation="CRBACorporate.subflow"/>
+        <ns2:operation name="createAccount" implementation="createAccount.subflow"/>
+        <ns2:operation name="getLimit" implementation="getLimit.subflow"/>
+        <ns2:operation name="getLoanCharges" implementation="getLoanCharges.subflow"/>
+        <ns2:operation name="getToken" implementation="getToken.subflow"/>
+        <ns2:operation name="idSearch" implementation="idSearch.subflow"/>
+        <ns2:operation name="loanApplication" implementation="loanApplication.subflow"/>
+        <ns2:operation name="loanStatusEnquiry" implementation="loanStatusEnquiry.subflow"/>
+        <ns2:operation name="validateToken" implementation="validateToken.subflow"/>
+    </ns2:operations>
+    <ns2:errorHandlers/>
+</ns2:restapiDescriptor>
