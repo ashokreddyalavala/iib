@@ -7,8 +7,8 @@ CREATE COMPUTE MODULE validateTokenDatalake_Valiadte_Token_Req_Resp
 		-- CALL CopyEntireMessage();
 		 DECLARE IPAddress,Token CHARACTER;
 --		 SET IPAddress=COALESCE(InputRoot.HTTPInputHeader."X-Remote-Addr");
-		 SET IPAddress=COALESCE(InputRoot.HTTPInputHeader."X-Forwarded-For");
-		 SET Token	=	COALESCE(InputRoot.HTTPInputHeader.Authtoken,'');
+		 SET IPAddress=COALESCE(InputRoot.JSON.Data.SourceIp,'');
+		 SET Token	=	COALESCE(InputRoot.JSON.Data.Token,'');
 		 IF Token='' THEN
 		 	THROW USER EXCEPTION CATALOG 'BIPmsgs' MESSAGE 3001 VALUES('Please provide the Authtoken') ;
 		 END IF;
