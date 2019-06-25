@@ -1,0 +1,136 @@
+BROKER SCHEMA common
+
+CREATE FILTER MODULE CommonParseException_parseException
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		IF FIELDNAME(Environment.Variables) IS NULL THEN
+			 CREATE FIELD Environment.Variables;
+			 DECLARE EV     REFERENCE TO Environment.Variables;
+		   	 DECLARE MQMD   REFERENCE TO Root.MQMD;
+		   	 DECLARE LEV 	REFERENCE TO LocalEnvironment;
+				--initialize the common environment variables for all the applications
+			 CALL common.setCommonEnvironmentVariables(EV, Root, LEV);
+		END IF;
+
+		DECLARE EV     REFERENCE TO Environment.Variables;
+		DECLARE APP	   REFERENCE TO EV.Application;
+				
+		IF EV.ErrorMsg IS NULL THEN
+			CREATE LASTCHILD OF EV Domain('XML') TYPE Name NAME 'ErrorMsg';
+		END IF; 
+		DECLARE OXE REFERENCE TO EV.ErrorMsg;
+		
+--		 Source of the message, which caused the error.
+		SET OXE.Error.TimeStamp = SUBSTRING(CAST(CURRENT_TIMESTAMP AS CHAR) FROM 12 FOR 26);
+				
+--		 Point to the First Child in the ExceptionList Root.
+		DECLARE Location character;
+		DECLARE Diagnostics character;
+		DECLARE DiagnosticsInfo character;
+		DECLARE ErrorFunction character;
+		DECLARE Width Integer;
+		SET Width = 1; 
+		DECLARE Path REFERENCE TO ExceptionList.*[Width]; 
+--		 Check whether the Width of the Exception Tree is more and Proceed.
+		While LastMove(Path) do
+			SET Diagnostics = '';
+			SET DiagnosticsInfo = '';
+			SET ErrorFunction = '';
+			While (Path.Number is not null)
+				do				
+				IF Length(Path.Label) > 0 THEN
+					SET Location = Path.Label;
+				End if;
+				IF Length(Path.Text) > 0 THEN
+					SET Diagnostics = Diagnostics || Path.Text || '. ';
+				End if;
+				IF Length(Path.Function) > 0 THEN
+					SET ErrorFunction = ErrorFunction || Path.Function || '. ';
+				End if;
+				
+				MOVE Path Lastchild;
+			End while;
+			
+----			 Construct the Specific Diagnostic Message.
+			MOVE Path Parent;
+--			 Determine the source of message which caused the error.
+			SET OXE.Error.Detail[Width].ExceptionType = FieldName(Path);
+			SET OXE.Error.Detail[Width].ErrorNumber = Path.Number;
+			SET OXE.Error.Detail[Width].SeverityLevel = Path.Severity;			
+			SET OXE.Error.Detail[Width].ErrorFunction = ErrorFunction;
+			SET OXE.Error.Detail[Width].ErrorSource = Location;
+			SET OXE.Error.Detail[Width].DiagnosticMessage= Diagnostics;
+			
+--			 while loop to traverse all the inserts and construct the
+--			 additional diagnostic message
+			MOVE Path FirstChild NAME 'Insert';
+			IF FieldName(Path)='Insert' THEN
+				While LastMove(Path) do
+					IF Length(Path.Text) > 0 THEN
+						SET DiagnosticsInfo = DiagnosticsInfo || Path.Text || '. ';
+					End if;
+					MOVE Path NextSibling NAME 'Insert';
+				End while;
+			END IF;
+			SET OXE.Error.Detail[Width].CauseOfError = DiagnosticsInfo;
+			
+			SET Width = Width +1;
+			MOVE Path TO ExceptionList.*[Width];
+		END WHILE;
+		
+		/*
+			set the ExceptionList as it is to the Error Msg
+		*/
+		SET OXE.Error.ExceptionList = ExceptionList;
+		
+		RETURN TRUE;
+	END;
+END MODULE;
+CREATE PROCEDURE setCommonEnvironmentVariables(INOUT EV REFERENCE,IN Root REFERENCE, IN LEV REFERENCE)
+/*
+Initialize the Application variables(these variables are common for every interface in the same application)
+*/
+BEGIN
+	CREATE FIELD EV.Application;
+	CREATE FIELD EV.FlowSpecificInfo;
+	
+	DECLARE APP REFERENCE TO EV.Application;
+	DECLARE IFS REFERENCE TO EV.FlowSpecificInfo;
+	DECLARE MQMD REFERENCE TO Root.MQMD;
+	DECLARE HTTP REFERENCE TO Root.HTTPInputHeader;
+
+	DECLARE IdAsChar CHAR;
+	DECLARE x INTEGER 0;		
+
+	SET EV.BeginTimestamp = CURRENT_TIMESTAMP;
+	SET EV.MaxCustomAttributes = 25;				
+	
+	SET APP.applicationName = 'Stanbic';
+	SET APP.flowName = MessageFlowLabel;
+	SET APP.exception = FALSE;
+	SET APP.dummyMessage = 'DummyMessage';
+	SET APP.skipReplyToQ = FALSE; -- variable to identify if ReplyToQ & ReplyToQMgr check needs to be avoided
+	SET APP.NullCorrelId ='000000000000000000000000000000000000000000000000' ;
+	SET APP.requestIndicator = '.REQUEST';
+	SET APP.responseIndicator = '.REPLY';
+	SET APP.datagramIndicator = '.DATAGRAM';
+	SET APP.inquireIndicator = '.INQUIRE';
+	SET APP.defaultWireFormat = 'JSON';
+	SET APP.NullIndicator = CAST(X'00' AS CHAR CCSID Root.Properties.CodedCharSetId);
+	SET APP.MessageRetrievedGMTTime = CURRENT_GMTTIME; -- represents the GMT Time at which the message is picked up from queue for processing
+	SET APP.setExpiryTime=864000; -- 24 hrs expiration time		
+
+	/*
+	determine the input transport type - MQ /HTTP /FILE
+	*/
+	IF FIELDNAME(Root.MQMD) <> '' THEN
+		SET APP.logInTransport = 'MQ';
+		SET APP.logOutTransport = 'MQ';
+	ELSEIF FIELDNAME(Root.HTTPInputHeader) <> '' THEN
+		SET APP.logInTransport = 'HTTP';
+		SET APP.logOutTransport = 'HTTP';
+	ELSE
+		SET APP.logInTransport = 'FILE';
+		SET APP.logOutTransport = 'FILE';
+	END IF;		
+END;

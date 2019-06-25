@@ -1,0 +1,65 @@
+BROKER SCHEMA common
+
+
+CREATE COMPUTE MODULE ProcessFailure_ConstructFailureResponse
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		--------Logging-----------
+		
+		SET Environment.Variables.LogType                   = 	'LogError';		
+		SET Environment.Variables.Logging.ErrorCode			=	Environment.Variables.ErrorMsg.Error.Detail.ErrorNumber;
+		SET Environment.Variables.Logging.ErrorDescription	=	Environment.Variables.ErrorMsg.Error.Detail.CauseOfError;
+		--------------------------
+		IF Environment.Variables.Request.Name = 'CRBA' THEN
+			CREATE LASTCHILD OF OutputRoot DOMAIN 'SOAP';
+			SET OutputRoot.SOAP.ResponseCode		  =	 Environment.Variables.ErrorMsg.Error.Detail.ErrorNumber;
+			SET OutputRoot.SOAP.Body.ResponseMessage  =  Environment.Variables.ErrorMsg.Error.Detail.CauseOfError;
+		ELSE
+		CREATE LASTCHILD OF OutputRoot DOMAIN 'JSON';
+		SET OutputRoot.JSON.Data.ResponseCode		=	Environment.Variables.ErrorMsg.Error.Detail.ErrorNumber;
+		IF OutputRoot.JSON.Data.ResponseCode='4394' THEN
+			DECLARE CRSTR CHAR; 
+			DECLARE LFSTR CHAR; 
+			SET CRSTR = CAST(x'0D' AS CHAR CCSID 1208) ; 
+			SET LFSTR = CAST(x'0A' AS CHAR CCSID 1208) ; 
+			
+			DECLARE CRLF CHAR; 
+			SET CRLF=CRSTR||LFSTR; 
+			SET OutputRoot.JSON.Data.ResponseMessage	= 'T24 ERROR: '||SUBSTRING(Environment.Variables.ErrorMsg.Error.Detail.CauseOfError FROM 1 FOR 200);
+			--SET OutputRoot.JSON.Data.ResponseMessage	=	SUBSTRING(Environment.Variables.ErrorMsg.Error.Detail.CauseOfError BEFORE CRLF);
+		ELSEIF OutputRoot.JSON.Data.ResponseCode='3151' OR OutputRoot.JSON.Data.ResponseCode='3161' THEN			
+			SET OutputRoot.JSON.Data.ResponseMessage	= 'A timeout occurred whilst performing a socket operation';
+		ELSEIF OutputRoot.JSON.Data.ResponseCode='3001' THEN
+			SET OutputRoot.JSON.Data.ResponseMessage	= SUBSTRING(Environment.Variables.ErrorMsg.Error.Detail.CauseOfError BEFORE '.');
+		ELSE
+			SET OutputRoot.JSON.Data.ResponseMessage	=	Environment.Variables.ErrorMsg.Error.Detail.CauseOfError;
+		END IF;
+		SET OutputRoot.JSON.Data.ReferenceId		    =	Environment.Data.Inputparms.ReferenceId;
+		
+--		IF OutputRoot.JSON.Data.ResponseMessage='Caught exception and rethrowing. Unhandled exception in plugin method. Unhandled exception in plugin method.' THEN
+--			SET OutputRoot.JSON.Data.ResponseMessage	= 'T24 ERROR: '||SUBSTRING(SUBSTRING (Environment.Variables.ErrorMsg.Error.Detail.CauseOfError AFTER 'T24OutboundNode.java. 164. ') BEFORE '.');
+--		END IF;
+
+
+		END IF;
+		
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;
